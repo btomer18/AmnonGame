@@ -17,7 +17,7 @@ GREEN = (0, 128, 0)
 RED = (253, 4, 6)
 EXPLODE_COLOR = (245, 137, 138)
 BOMB_COLOR = (209, 209, 209)
-DISCOVERED_COLOR = (215, 212, 255)
+DISCOVERED_COLOR = (187, 193, 255)
 UNDISCOVERED_COLORS = [
     (0, 103, 96),
     (4, 183, 173),
@@ -28,9 +28,10 @@ BOXES_COLORS = OrderedDict(
         ("1", [BLUE, DISCOVERED_COLOR]),
         ("2", [GREEN, DISCOVERED_COLOR]),
         ("3", [RED, DISCOVERED_COLOR]),
-        ("bomb_guess", [BOMB_COLOR] + UNDISCOVERED_COLORS),
+        ("bomb", [BOMB_COLOR] + UNDISCOVERED_COLORS),
         ("exploded_bomb", [EXPLODE_COLOR, BOMB_COLOR]),
-        ("undiscovered", UNDISCOVERED_COLORS),
+        ("0", UNDISCOVERED_COLORS),
+        ("x", [DISCOVERED_COLOR]),
     ]
 )
 
