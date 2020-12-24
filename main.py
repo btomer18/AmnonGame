@@ -38,26 +38,61 @@ BOXES_COLORS = OrderedDict(
 
 def main():
     board = capture_board()
-    analyzed_board = analyze_board(board)
-    print_board(analyzed_board)
+    board = mark_board(board)
+    print_board(board)
+    bombs = find_bombs(board)
+    print(bombs)
 
 
-def print_board(analyzed_board: List[List[Tuple[Image.Image, str]]]):
-    for row in analyzed_board:
-        for analyzed_box in row:
-            print(analyzed_box[1], end=" ")
+def find_bombs_around(num: int, row: int, col: int, board: List[List[str]]):
+    around = [
+        (row - 1, col - 1),
+        (row - 1, col),
+        (row - 1, col + 1),
+        (row, col - 1),
+        (row, col + 1),
+        (row + 1, col - 1),
+        (row + 1, col),
+        (row + 1, col + 1),
+    ]
+    # removes boxes that are out of bound
+    around = [
+        loc
+        for loc in around
+        if 0 <= loc[0] < len(board)
+        and 0 <= loc[1] < len(board[0])
+        and board[loc[0]][loc[1]] == "X"
+    ]
+
+    return around if num == len(around) else []
+
+
+def find_bombs(board: List[List[str]]):
+    bombs = set()
+    for row_index, row in enumerate(board):
+        for col_index, mark in enumerate(row):
+            if mark.isnumeric() and mark != "0":
+                for bomb in find_bombs_around(int(mark), row_index, col_index, board):
+                    bombs.add(bomb)
+    return bombs
+
+
+def print_board(board: List[List[str]]):
+    for row in board:
+        for mark in row:
+            print(mark, end=" ")
         print()
 
 
-def analyze_board(board: List[List[Image.Image]]) -> List[List[Tuple[Image.Image, str]]]:
-    return [[analyze_box(box) for box in row] for row in board]
+def mark_board(board: List[List[Image.Image]]) -> List[List[str]]:
+    return [[mark_box(box) for box in row] for row in board]
 
 
-def analyze_box(box: Image.Image) -> Tuple[Image.Image, str]:
+def mark_box(box: Image.Image) -> str:
     pixels = list(box.getdata())
-    for box_type in BOXES_COLORS.keys():
-        if all(color in pixels for color in BOXES_COLORS[box_type]):
-            return box, box_type
+    for box_mark in BOXES_COLORS.keys():
+        if all(color in pixels for color in BOXES_COLORS[box_mark]):
+            return box_mark
 
     raise UnrecognizedBoxException()
 
