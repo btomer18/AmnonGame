@@ -37,12 +37,27 @@ BOXES_COLORS = OrderedDict(
 
 
 def main():
-    board = capture_board()
-    board = mark_board(board)
-    print_board(board)
-    bombs = find_bombs(board)
-    non_bombs = find_non_bombs(bombs, board)
-    print(non_bombs)
+    # for entering the loop
+    non_bombs = [1]
+    while non_bombs:
+        board = capture_board()
+        board = mark_board(board)
+        bombs = find_bombs(board)
+        non_bombs = find_non_bombs(bombs, board)
+        click_all(non_bombs)
+
+
+def click_all(positions: List[Tuple[int, int]]):
+    for p in positions:
+        print(p[0], p[1])
+        click(p[0], p[1])
+
+
+def click(row: int, col: int):
+    x = BOARD_POSITION[0] + (col * (BOX_SIZE + BOX_DELIMITER_SIZE)) + 10
+    y = BOARD_POSITION[1] + (row * (BOX_SIZE + BOX_DELIMITER_SIZE)) + 10
+
+    pyautogui.click(x=x, y=y)
 
 
 def find_non_bombs(bombs: List[Tuple[int, int]], board: List[List[str]]):
