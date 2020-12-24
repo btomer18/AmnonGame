@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import List, Tuple
+from typing import List, Tuple, Set
 
 from PIL import Image
 import pyautogui
@@ -41,10 +41,23 @@ def main():
     board = mark_board(board)
     print_board(board)
     bombs = find_bombs(board)
-    print(bombs)
+    non_bombs = find_non_bombs(bombs, board)
+    print(non_bombs)
 
 
-def find_bombs_around(num: int, row: int, col: int, board: List[List[str]]):
+def find_non_bombs(bombs: List[Tuple[int, int]], board: List[List[str]]):
+    non_bombs = set()
+    for row_index, row in enumerate(board):
+        for col_index, mark in enumerate(row):
+            if mark.isnumeric() and mark != "0":
+                for bomb in find_non_bombs_around(
+                    int(mark), row_index, col_index, board, bombs
+                ):
+                    non_bombs.add(bomb)
+    return list(non_bombs)
+
+
+def get_undiscovered_boxes_around(row: int, col: int, board: List[List[str]]):
     around = [
         (row - 1, col - 1),
         (row - 1, col),
@@ -56,7 +69,7 @@ def find_bombs_around(num: int, row: int, col: int, board: List[List[str]]):
         (row + 1, col + 1),
     ]
     # removes boxes that are out of bound
-    around = [
+    return [
         loc
         for loc in around
         if 0 <= loc[0] < len(board)
@@ -64,6 +77,18 @@ def find_bombs_around(num: int, row: int, col: int, board: List[List[str]]):
         and board[loc[0]][loc[1]] == "X"
     ]
 
+
+def find_non_bombs_around(
+    num: int, row: int, col: int, board: List[List[str]], bombs: List[Tuple[int, int]]
+):
+    around = get_undiscovered_boxes_around(row, col, board)
+    non_bombs = [box for box in around if box not in bombs]
+    bombs_amount_around = len(around) - len(non_bombs)
+    return non_bombs if num == bombs_amount_around else []
+
+
+def find_bombs_around(num: int, row: int, col: int, board: List[List[str]]):
+    around = get_undiscovered_boxes_around(row, col, board)
     return around if num == len(around) else []
 
 
@@ -74,7 +99,7 @@ def find_bombs(board: List[List[str]]):
             if mark.isnumeric() and mark != "0":
                 for bomb in find_bombs_around(int(mark), row_index, col_index, board):
                     bombs.add(bomb)
-    return bombs
+    return list(bombs)
 
 
 def print_board(board: List[List[str]]):
