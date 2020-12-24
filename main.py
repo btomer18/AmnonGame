@@ -30,15 +30,23 @@ BOXES_COLORS = OrderedDict(
         ("3", [RED, DISCOVERED_COLOR]),
         ("bomb", [BOMB_COLOR] + UNDISCOVERED_COLORS),
         ("exploded_bomb", [EXPLODE_COLOR, BOMB_COLOR]),
-        ("0", UNDISCOVERED_COLORS),
-        ("x", [DISCOVERED_COLOR]),
+        ("X", UNDISCOVERED_COLORS),
+        ("0", [DISCOVERED_COLOR]),
     ]
 )
 
 
 def main():
     board = capture_board()
-    board = analyze_board(board)
+    analyzed_board = analyze_board(board)
+    print_board(analyzed_board)
+
+
+def print_board(analyzed_board: List[List[Tuple[Image.Image, str]]]):
+    for row in analyzed_board:
+        for analyzed_box in row:
+            print(analyzed_box[1], end=" ")
+        print()
 
 
 def analyze_board(board: List[List[Image.Image]]) -> List[List[Tuple[Image.Image, str]]]:
